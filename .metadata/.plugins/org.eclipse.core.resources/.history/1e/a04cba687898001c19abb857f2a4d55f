@@ -1,0 +1,6 @@
+package net.longvan.training.spring.DemoController;
+
+
+public class LoginController {
+
+}

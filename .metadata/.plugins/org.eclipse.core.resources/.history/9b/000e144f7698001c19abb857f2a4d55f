@@ -1,0 +1,5 @@
+package net.longvan.training.spring;
+
+public class PasswordEncoder {
+
+}

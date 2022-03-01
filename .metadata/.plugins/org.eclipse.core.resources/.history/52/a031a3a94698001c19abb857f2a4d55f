@@ -1,0 +1,28 @@
+package net.longvan.training.spring;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import net.longvan.training.spring.model.Employee;
+import net.longvan.training.spring.repository.EmployeeRepository;
+
+@SpringBootApplication
+public class ProjectTranningApplication {
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProjectTranningApplication.class, args);
+		dataTest();
+	}
+
+	void dataTest() {
+		System.out.println("Data creation started...");
+		employeeRepository.save(new Employee("e01", "Luan", "Ngo Xuan", 21, "Ninh Thuan"));
+		employeeRepository.save(new Employee("e02", "Hao", "Ngo Quoc", 21, "Ninh Thuan"));
+		employeeRepository.save(new Employee("e03", "Vinh", "Nguyen Ngoc Bao Vinh", 21, "Ninh Thuan"));
+		employeeRepository.save(new Employee("e04", "A", "Nguyen Van A", 24, "Ho Chi Minh city"));
+		System.out.println("Data creation complete...");
+	}
+}

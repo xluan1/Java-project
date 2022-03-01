@@ -1,0 +1,10 @@
+package net.longvan.training.spring.service;
+
+
+import net.longvan.training.spring.repository.UserRepository;
+
+@Service
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+	
+	
+}

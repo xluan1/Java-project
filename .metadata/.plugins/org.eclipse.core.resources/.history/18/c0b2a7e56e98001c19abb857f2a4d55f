@@ -1,0 +1,9 @@
+package net.longvan.training.spring.service;
+
+
+import net.longvan.training.spring.repository.UserRepository;
+
+public class UserDetailsService implements CustomUserDetailsService {
+	
+	
+}

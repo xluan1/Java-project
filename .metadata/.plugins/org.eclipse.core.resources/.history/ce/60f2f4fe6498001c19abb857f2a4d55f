@@ -1,0 +1,6 @@
+spring.data.mongodb.uri=mongodb://localhost:27017/Test
+
+
+#logging
+logging.level.org.springframework.data=debug
+logging.level.=error

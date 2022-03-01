@@ -1,0 +1,18 @@
+package net.longvan.training.spring.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import net.longvan.training.spring.repository.UserRepository;
+
+public class UserDetailsService implements UserDetailsService {
+	@Autowired
+	private UserRepository repository;
+	
+	@Override
+	public UserDetails loadUserByUserName (String username) throws UsernameNotFoundException{
+		
+	}
+}

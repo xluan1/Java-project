@@ -1,0 +1,69 @@
+package net.longvan.training.spring.DemoController;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import net.longvan.training.spring.model.Employee;
+import net.longvan.training.spring.repository.EmployeeRepository;
+
+@RestController
+@RequestMapping("/employees")
+public class EmployeeController {
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	@GetMapping
+	public List<Employee> getAllEmployee() {
+		return employeeRepository.findAll();
+	}
+
+	@GetMapping("/{id}")
+	public Optional<Employee> getEmployeeById(@PathVariable String id) {
+		return employeeRepository.findById(id);
+	}
+
+	@PostMapping
+	public String createEmployee(@RequestBody Employee employee) {
+		employeeRepository.save(employee);
+		return "Đã thêm thành công";
+	}
+
+	@PutMapping("/{id}")
+	public String updateEmployeeById(@RequestBody Employee employee, @PathVariable String id) {
+		Optional<Employee> checkId = employeeRepository.findById(id);
+
+		if (checkId.isPresent()) {
+			Employee uploadEmployee = checkId.get();
+
+			uploadEmployee.setAddress(employee.getAddress());
+			uploadEmployee.setFirstName(employee.getFirstName());
+			uploadEmployee.setLastName(employee.getLastName());
+			uploadEmployee.setAge(employee.getAge());
+
+			employeeRepository.save(uploadEmployee);
+			return "Đã cập nhật thành công" + id;
+		}
+
+		return "Không tìm thấy sản phẩm";
+	}
+
+	@DeleteMapping("/{id}")
+	public String deleteEmployeeById(@PathVariable String id) {
+		Optional<Employee> checkId = employeeRepository.findById(id);
+		if (checkId.isPresent()) {
+			employeeRepository.deleteById(id);
+			return "Đã xóa nhân viên: " + id;
+		}
+		return "Không tìm thấy sản phẩm";
+	}
+}
