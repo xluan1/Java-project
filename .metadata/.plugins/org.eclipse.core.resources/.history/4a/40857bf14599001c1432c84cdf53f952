@@ -1,0 +1,143 @@
+package net.longvan.training.spring.excel;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import net.longvan.training.spring.model.User;
+
+public class UserExcelExporter {
+	private XSSFWorkbook workbook;
+	private XSSFSheet sheet;
+	private List<User> users;
+
+	public UserExcelExporter(List<User> users) {
+		super();
+		this.users = users;
+		workbook = new XSSFWorkbook();
+		sheet = workbook.createSheet("User");
+	}
+
+	// Initialize first line
+	private void writeHeaderLine() {
+
+		Row row = sheet.createRow(0);
+		CellStyle style = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setBold(true);
+		font.setFontHeight(13);
+		font.setThemeColor(IndexedColors.BLACK.getIndex());
+		style.setFont(font);
+
+		Cell cell = row.createCell(0);
+		cell.setCellValue("id");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(1);
+		cell.setCellValue("name");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(2);
+		cell.setCellValue("birthDate");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(3);
+		cell.setCellValue("description");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(4);
+		cell.setCellValue("gender");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(5);
+		cell.setCellValue("address");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(6);
+
+		cell.setCellValue("phone");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(7);
+		cell.setCellValue("status");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(8);
+		cell.setCellValue("email");
+		cell.setCellStyle(style);
+
+		cell = row.createCell(9);
+		cell.setCellValue("password");
+		cell.setCellStyle(style);
+	}
+
+	// multi-lines initialization for file excel
+	private void writeDataLines() {
+		int rowCount = 1;
+
+		for (User user : users) {
+			Row row = sheet.createRow(rowCount++);
+
+			Cell cell = row.createCell(0);
+			cell.setCellValue(user.getId());
+			sheet.autoSizeColumn(0);
+			
+			cell = row.createCell(1);
+			cell.setCellValue(user.getName());
+			sheet.autoSizeColumn(1);
+			
+			cell = row.createCell(2);
+			cell.setCellValue(user.getBirthDate());
+			sheet.autoSizeColumn(2);
+			
+			cell = row.createCell(3);
+			cell.setCellValue(user.getDescription());
+			sheet.autoSizeColumn(3);
+			
+			cell = row.createCell(4);
+			cell.setCellValue(user.getGender());
+			sheet.autoSizeColumn(4);
+			
+			cell = row.createCell(5);
+			cell.setCellValue(user.getAddress());
+			sheet.autoSizeColumn(5);
+			
+			cell = row.createCell(6);
+			cell.setCellValue(user.getPhone());
+			sheet.autoSizeColumn(6);
+			
+			cell = row.createCell(7);
+			cell.setCellValue(user.getStatus());
+			sheet.autoSizeColumn(7);
+			
+			cell = row.createCell(8);
+			cell.setCellValue(user.getEmail());
+			sheet.autoSizeColumn(8);
+			
+			cell = row.createCell(9);
+			cell.setCellValue(user.getPassword());
+			sheet.autoSizeColumn(9);
+		}
+	}
+
+	// export data to file excel
+	public void export(HttpServletResponse response) throws IOException {
+		writeHeaderLine();
+		writeDataLines();
+
+		ServletOutputStream outputStream = response.getOutputStream();
+		workbook.write(outputStream);
+		workbook.close();
+		outputStream.close();
+	}
+}

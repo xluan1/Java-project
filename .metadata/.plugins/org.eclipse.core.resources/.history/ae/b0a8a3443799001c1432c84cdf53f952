@@ -1,0 +1,61 @@
+package net.longvan.training.spring.excel;
+
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import net.longvan.training.spring.model.User;
+
+public class UserExcelExporter {
+	private XSSFWorkbook workbook;
+	private XSSFSheet sheet;
+	private List<User> users;
+
+	public UserExcelExporter(List<User> users) {
+		super();
+		this.users = users;
+		workbook = new XSSFWorkbook();
+	}
+
+	// the initialization row header
+	private void writeHeaderLine() {
+		sheet = workbook.createSheet("User");
+
+		Row row = sheet.createRow(0);
+		CellStyle style = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setBold(true);
+		font.setThemeColor(IndexedColors.BLACK.getIndex());
+		style.setFont(font);
+
+		createCell(row, 0, "id", style);
+		createCell(row, 0, "id", style);
+		createCell(row, 0, "id", style);
+		createCell(row, 0, "id", style);
+		createCell(row, 0, "id", style);
+		createCell(row, 0, "id", style);
+	}
+
+	// this method requires an integer argument which should be a column number
+	private void createCell(Row row, int i, Object value, CellStyle style) {
+
+		sheet.autoSizeColumn(i);
+		Cell cell = row.createCell(i);
+		if (value instanceof Integer) {
+			cell.setCellValue((Integer) value);
+		} else if (value instanceof Boolean) {
+			cell.setCellValue((Boolean) value);
+		} else {
+			cell.setCellValue((String) value);
+		}
+		cell.setCellStyle(style);
+	}
+
+	//
+}

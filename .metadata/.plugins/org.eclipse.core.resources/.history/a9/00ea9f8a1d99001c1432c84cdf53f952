@@ -1,0 +1,12 @@
+package net.longvan.training.spring.repository;
+
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+
+import net.longvan.training.spring.model.FileModel;
+
+public interface FileRepository extends MongoRepository<FileModel, String> {
+	@Query("{name:'?0'}")
+	Boolean checkFile(String name);
+}

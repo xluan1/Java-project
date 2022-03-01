@@ -1,0 +1,36 @@
+package net.longvan.training.spring.model;
+
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("file")
+public class File {
+	@Transient
+    public static final String SEQUENCE_NAME = "user_sequence";
+	
+	private String name;
+	private String url;
+
+	public File(String name, String url) {
+		super();
+		this.name = name;
+		this.url = url;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+}

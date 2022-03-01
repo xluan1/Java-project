@@ -1,0 +1,36 @@
+package net.longvan.training.spring.service.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import net.longvan.training.spring.model.FileModel;
+import net.longvan.training.spring.repository.FileRepository;
+import net.longvan.training.spring.service.FileService;
+
+@Service
+public class FileServiceImpl implements FileService {
+	public static final String PATH = "D:\\LongVan\\Upload\\image\\";
+
+	@Autowired
+	private FileRepository fileRepository;
+
+	@Override
+	public void uploadFile(MultipartFile file) throws IllegalStateException, IOException {
+		String originFile = PATH + file.getOriginalFilename();
+		Boolean checkFile = fileRepository.checkFile(originFile);
+
+		if (!checkFile) {
+			file.transferTo(new File(originFile));
+			FileModel fileModel = new FileModel(file.getOriginalFilename(), originFile);
+			fileRepository.insert(fileModel);
+		}
+
+		return ;
+	}
+
+}

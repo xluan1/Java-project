@@ -1,0 +1,149 @@
+package net.longvan.training.spring.DemoController;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import net.longvan.training.spring.excel.UserExcelExporter;
+import net.longvan.training.spring.model.User;
+import net.longvan.training.spring.repository.UserRepository;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+	@Autowired
+	private UserRepository repository;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+	
+	@GetMapping("/export/user")
+	public ResponseEntity<String> exportDataToExcel(HttpServletResponse response) {
+		LOGGER.info("Đây là phương thức xuất dữ liệu thành tập tin Excel");
+		try {
+			response.setContentType("application/octet-stream");
+			DateFormat dateFormat = new SimpleDateFormat("hh:MM_dd-MM-yyyy");
+			String currentDate = dateFormat.format(new Date());
+			System.out.println("Ngày: " + currentDate);
+			String headerKey = "Content-Disposition";
+			String headerValue = "attachment; filename=users_" + currentDate + ".xlsx";
+			System.out.println("Ngày: " + headerValue);
+			response.setHeader(headerKey, headerValue);
+
+			List<User> users = repository.findAll();
+			UserExcelExporter userExcelExporter = new UserExcelExporter(users);
+			userExcelExporter.export(response);
+
+			LOGGER.info("Xuất tập tin thành công!");
+			return new ResponseEntity<>("Đã xuất dữ liệu ra tập tin Excel!", HttpStatus.OK);
+		} catch (IOException e) {
+			LOGGER.error("Lỗi! " + e.getMessage());
+			return new ResponseEntity<>("Lỗi! không thể xuất tập tin", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+//	@PostMapping("/export/user")
+//	public ResponseEntity<String> exportDataToExcel(HttpServletResponse response) {
+//		LOGGER.info("Đây là phương thức xuất dữ liệu thành tập tin Excel");
+//		try {
+//			response.setContentType("application/octet-stream");
+//			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+//			String currentDate = dateFormat.format(new Date());
+//			System.out.println("Ngày: " + currentDate);
+//			String headerKey = "Content-Disposition";
+//			String headerValue = "attachment; filename=users_" + currentDate + ".xlsx";
+//			System.out.println("Ngày: " + headerValue);
+//			response.setHeader(headerKey, headerValue);
+//
+//			List<User> users = repository.findAll();
+//			UserExcelExporter userExcelExporter = new UserExcelExporter(users);
+//			userExcelExporter.export(response);
+//
+//			LOGGER.info("Xuất tập tin thành công!");
+//			return new ResponseEntity<>("Đã xuất dữ liệu ra tập tin Excel!", HttpStatus.OK);
+//		} catch (IOException e) {
+//			LOGGER.error("Lỗi! " + e.getMessage());
+//			return new ResponseEntity<>("Lỗi! không thể xuất tập tin", HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+
+	@GetMapping
+	public ResponseEntity<List<User>> getAllUser() {
+		LOGGER.info("Đây là hàm xuất tất cả các User");
+		return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> getById(@PathVariable String id) {
+		LOGGER.info("Đây là hàm xuất User theo id");
+		Optional<User> checkUser = repository.findById(id);
+		if (checkUser.isPresent()) {
+			return new ResponseEntity<>(checkUser.get(), HttpStatus.OK);
+		}
+		LOGGER.warn("Không tồn tại user có id là: " + id);
+		return new ResponseEntity<>("Không tìm thấy user: " + id, HttpStatus.NOT_FOUND);
+	}
+
+	@PostMapping
+	public ResponseEntity<?> addUser(@RequestBody User user) {
+		LOGGER.info("Đây là hàm thêm User theo id");
+		Optional<User> checkUser = repository.findById(user.getId());
+		if (checkUser.isPresent()) {
+			LOGGER.warn("User đã tồn tại hãy dùng User khác!");
+			return new ResponseEntity<>("User đã tồn tại: " + user.getId(), HttpStatus.CONFLICT);
+		}
+		return new ResponseEntity<>(repository.save(user), HttpStatus.CREATED);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String id) {
+		LOGGER.info("Đây là hàm cập nhật User theo id");
+		Optional<User> checkUser = repository.findById(id);
+		if (checkUser.isPresent()) {
+			User updateUser = checkUser.get();
+			updateUser.setAddress(user.getAddress());
+			updateUser.setBirthDate(user.getBirthDate());
+			updateUser.setDescription(user.getDescription());
+			updateUser.setEmail(user.getEmail());
+			updateUser.setGender(user.getGender());
+			updateUser.setName(user.getName());
+			updateUser.setPassword(user.getPassword());
+			updateUser.setStatus(user.getStatus());
+			LOGGER.warn("Cập nhật thành công!");
+			return new ResponseEntity<>(checkUser.get(), HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Không tìm thấy user: " + id, HttpStatus.NOT_FOUND);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteUser(@PathVariable String id) {
+		LOGGER.info("Đây là hàm xóa User theo id");
+		Optional<User> checkUser = repository.findById(id);
+		if (checkUser.isPresent()) {
+			repository.deleteById(checkUser.get().getId());
+			LOGGER.warn("Xóa thành công User: " + id);
+			return new ResponseEntity<>("Đã xóa thành công user: " + id, HttpStatus.OK);
+		}
+		return new ResponseEntity<>("Không tìm thấy user: " + id, HttpStatus.NOT_FOUND);
+	}
+
+}

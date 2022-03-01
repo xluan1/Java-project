@@ -1,0 +1,131 @@
+package net.longvan.training.spring.excel;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import net.longvan.training.spring.model.User;
+
+public class UserExcelExporter {
+	private XSSFWorkbook workbook;
+	private XSSFSheet sheet;
+	private List<User> users;
+
+	public UserExcelExporter(List<User> users) {
+		super();
+		this.users = users;
+		workbook = new XSSFWorkbook();
+		sheet = workbook.createSheet("User");
+	}
+
+	// Initialize first line
+	private void writeHeaderLine() {
+
+		Row row = sheet.createRow(0);
+		CellStyle style = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setBold(true);
+		font.setThemeColor(IndexedColors.BLACK.getIndex());
+		style.setFont(font);
+
+		Cell cell = row.createCell(0);
+		cell.setCellValue("id");
+		cell.setCellStyle(style);
+		
+		cell = row.createCell(1);
+		cell.setCellValue("name");
+		cell.setCellStyle(style);
+		
+		cell = row.createCell(2);
+		cell.setCellValue("birthDate");
+		cell.setCellStyle(style);
+		
+		cell = row.createCell(3);
+		cell.setCellValue("description");
+		cell = row.createCell(4);
+		cell.setCellValue("gender");
+		cell = row.createCell(5);
+		cell.setCellValue("address");
+		cell = row.createCell(6);
+		cell.setCellValue("phone");
+		cell.setCellStyle(style);
+		
+		cell = row.createCell(7);
+		cell.setCellValue("status");
+		cell.setCellStyle(style);
+		
+		cell = row.createCell(8);
+		cell.setCellValue("email");
+		
+		cell = row.createCell(9);
+		cell.setCellValue("password");
+		cell.setCellStyle(style);
+	}
+
+	// this method requires an integer argument which should be a column number
+	private void createCell(Row row, int i, Object value, CellStyle style) {
+
+		sheet.autoSizeColumn(i);
+		Cell cell = row.createCell(i);
+		if (value instanceof Integer) {
+			cell.setCellValue((Integer) value);
+		} else if (value instanceof Boolean) {
+			cell.setCellValue((Boolean) value);
+		} else {
+			cell.setCellValue((String) value);
+		}
+		cell.setCellStyle(style);
+	}
+
+	// multi-lines initialization for file excel
+	private void writeDataLines() {
+		int rowCount = 1;
+
+		for (User user : users) {
+			Row row = sheet.createRow(rowCount++);
+
+			Cell cell = row.createCell(0);
+			cell.setCellValue(user.getId());
+			cell = row.createCell(1);
+			cell.setCellValue(user.getName());
+			cell = row.createCell(2);
+			cell.setCellValue(user.getBirthDate());
+			cell = row.createCell(3);
+			cell.setCellValue(user.getDescription());
+			cell = row.createCell(4);
+			cell.setCellValue(user.getGender());
+			cell = row.createCell(5);
+			cell.setCellValue(user.getAddress());
+			cell = row.createCell(6);
+			cell.setCellValue(user.getPhone());
+			cell = row.createCell(7);
+			cell.setCellValue(user.getStatus());
+			cell = row.createCell(8);
+			cell.setCellValue(user.getEmail());
+			cell = row.createCell(9);
+			cell.setCellValue(user.getPassword());
+			
+		}
+	}
+
+	// export data to file excel
+	public void export(HttpServletResponse response) throws IOException {
+		writeHeaderLine();
+		writeDataLines();
+
+		ServletOutputStream outputStream = response.getOutputStream();
+		workbook.write(outputStream);
+		workbook.close();
+		outputStream.close();
+	}
+}

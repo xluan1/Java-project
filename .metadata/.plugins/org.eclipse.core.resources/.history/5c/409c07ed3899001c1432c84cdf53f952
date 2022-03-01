@@ -1,0 +1,89 @@
+package net.longvan.training.spring.excel;
+
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import net.longvan.training.spring.model.User;
+
+public class UserExcelExporter {
+	private XSSFWorkbook workbook;
+	private XSSFSheet sheet;
+	private List<User> users;
+
+	public UserExcelExporter(List<User> users) {
+		super();
+		this.users = users;
+		workbook = new XSSFWorkbook();
+	}
+
+	// Initialize first line
+	private void writeHeaderLine() {
+		sheet = workbook.createSheet("User");
+
+		Row row = sheet.createRow(0);
+		CellStyle style = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setBold(true);
+		font.setThemeColor(IndexedColors.BLACK.getIndex());
+		style.setFont(font);
+
+		createCell(row, 0, "id", style);
+		createCell(row, 1, "name", style);
+		createCell(row, 2, "birthDate", style);
+		createCell(row, 3, "description", style);
+		createCell(row, 4, "gender", style);
+		createCell(row, 5, "address", style);
+		createCell(row, 6, "phone", style);
+		createCell(row, 7, "description", style);
+		createCell(row, 8, "email", style);
+		createCell(row, 9, "password", style);
+	}
+
+	// this method requires an integer argument which should be a column number
+	private void createCell(Row row, int i, Object value, CellStyle style) {
+
+		sheet.autoSizeColumn(i);
+		Cell cell = row.createCell(i);
+		if (value instanceof Integer) {
+			cell.setCellValue((Integer) value);
+		} else if (value instanceof Boolean) {
+			cell.setCellValue((Boolean) value);
+		} else {
+			cell.setCellValue((String) value);
+		}
+		cell.setCellStyle(style);
+	}
+
+	// multi-lines initialization for file excel
+	private void writeDataLines() {
+		int rowCount = 1;
+
+		CellStyle style = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setFontHeight(14);
+		style.setFont(font);
+
+		for (User user : users) {
+			Row row = sheet.createRow(rowCount++);
+			int columnCount = 0;
+
+			createCell(row, columnCount++, user.getId(), style);
+			createCell(row, columnCount++, "name", style);
+			createCell(row, columnCount++, "birthDate", style);
+			createCell(row, columnCount++, "description", style);
+			createCell(row, columnCount++, "gender", style);
+			createCell(row, columnCount++, "address", style);
+			createCell(row, columnCount++, "phone", style);
+			createCell(row, columnCount++, "description", style);
+			createCell(row, columnCount++, "email", style);
+			createCell(row, columnCount++, "password", style);
+		}
+	}
+}

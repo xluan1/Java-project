@@ -1,0 +1,35 @@
+package net.longvan.training.spring.excel;
+
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import net.longvan.training.spring.model.User;
+
+public class UserExcelExporter {
+	private XSSFWorkbook workbook;
+	private XSSFSheet sheet;
+	private List<User> users;
+
+	public UserExcelExporter(List<User> users) {
+		super();
+		this.users = users;
+		workbook = new XSSFWorkbook();
+	}
+
+	// the initialization row header
+	private void writeHeaderLine() {
+		sheet = workbook.createSheet("User");
+
+		Row row = sheet.createRow(0);
+		CellStyle style = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setBold(true);
+		font.setThemeColor(IndexedColors.BLACK.getIndex());
+	}
+}
